@@ -1,0 +1,144 @@
+---
+title: "Using ToxPlot Package to Analyze in vitro Screening Data"
+author: "Jun Wang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+# Introduction
+
+The `toxplot` (Toxicology Plot) package provides a convenient interface to batch process high-throughput toxicology bioassay screening data. It's designed specifically for screening experiment that features a primary assay and a companion cytotoxicity assay. This package provides functions for data normalization, quality-control analysis, dose-response curve fitting, visualization, and a unqiue toxicity-adjusted potency ranking system. 
+
+<!-- This package was initially written to analyze NIS RAIU assay screening of ToxCast phase I chemical library. Refer to the [analysis markdown](https://github.com/njekin/NIS-RAIU-assay-ToxCast-Phase1_v2-screening-analysis) for usage of the package. -->
+
+# Format of input data
+To allow the package process data correctly, it is essential to ensure the data input follows required format. 
+Below are the essential columns to include in the input data. Since this package is designed to look at a primary inhibition assay and a parallel cell viability/cytotoxicity assay simultaneously, data from both assays should be put together in a single input file or dataframe.  
+
+Columns required:  
+
+* assay: name of the assay.  cytotox or raiu
+* apid:  assay plate id. apid shoud be a unique id for each 96 well plate, can distinguish replicate, but doesn't distinguish Cytotox and RAIU
+* pid:   plate id. used to represent mother plate id, doesn't distinguish replicate,nor Cytotox or RAIU. 
+* spid:  chemical sample name/ID
+* rowi:  row position on 96 well plate
+* coli:  column position on 96 well plate
+* rval:  raw reading value for each well
+* repi:  replicate id, (1 to 3)
+* conc:  molar concentration (M, no the uM that ToxCast pipeline uses)
+* wllt:  well type. define whether a well contains a control or a test sample    
+
+> Welltype explained:  
+t: test chemical/sample   
+n: DMSO negative control 
+pr: positive control of primary assay, for RAIU assay the chemical is NaClO4  
+nrc: negative chemical control (2,4-D, a chemical that is supposed to be negative in both raiu and celltiter-glo toxicity assay) 
+pc: positive control for celltiter-glo cytotixicity assay (DCNQ)   
+
+
+
+# Demo data included in the package
+Load the demo dataset included in the package. Below is the head of the dataframe.
+```{r, message=FALSE, warning=FALSE}
+library(dplyr)
+devtools::load_all()
+
+knitr::kable(head(demo_mc), caption = "Head rows of demo data")
+```
+
+
+# Data Analysis
+## Define basic assay info
+
+Before analyzing the data, it is necessary to define the name of the primary and cytotoxicity assay.    
+*Note that the names defined here should exactly match what's provided in the <assay> column of the input dataframe.*
+```{r}
+  #define the names of the primary and toxicity assay.
+assay_info <- list(
+  prim_assay = "Primary",
+  toxi_assay = "Cytotox"
+)
+```
+
+## Data Normalization
+The `normalize_per_plate` function normalize raw readings as percent of the median/mean of negative control wells (DMSO in this case). The normalized values are included in `nval_mean` and `nval_median` column.
+
+```{r, message=FALSE, warning=FALSE}
+# normalization
+demo_mc_norm <- normalize_per_plate(demo_mc, nctrl = "DMSO")
+knitr::kable(head(demo_mc_norm))
+```
+
+## Quality Control Metrics
+The `qc_per_plate` function calculate qc metrics for each assay plate, returns three tables each representing the statistics of negative controls, positive controls and QC measures including the CV of DMSO controls and Z' score.  
+
+Z' factor is calculated as follows:  
+$$Z'=1-\frac{3\sigma_{positive\ control} + 3\sigma_{DMSO\ control}}{|\mu_{positive\ control} - \mu_{DMSO\ control}|}$$    
+
+```{r}
+# qc
+qc <- qc_per_plate(demo_mc_norm, assay_info)
+knitr::kable(qc$neg_ctrl_sum)
+knitr::kable(qc$pos_ctrl_sum)
+knitr::kable(qc$qc)
+```
+
+## Dose-response curve fitting
+
+The `fit_curve_tcpl` function uses the hill model provided in U.S.EPA's ToxCast pipeline `tcpl` package^[    https://CRAN.R-project.org/package=tcpl] to fit dose-response curves. This function serves as an convenient interface to call the `tcplFit` function in the `tcpl` package, and returns a list object containing all data and modeling results. Compared to using the `tcpl` package, `toxplot` package doesn't require usage of mysql/sqlite database.  
+
+The Hill Model:  
+
+$$f(x) = \frac{tp}{1+10^{(ga-x)gw}}$$  
+  
+Where x is the log concentration, tp is the top asymptote, ga is the AC50 (the log concentration where the modeled activity equals 50% of the top asymptote), and gw is the hill coefficient. The Hill model provided in the tcpl R package constrains the three parameters as following:  
+
+* (1)	0 ≤ tp ≤ 1.2 times the maximum response value  
+* (2)	(minimum log concentration minus 2) ≤ ga ≤ (maximum log concentration plus 0.5)  
+* (3)	0.3 ≤ gw ≤ 8   
+
+```{r}
+# curve fitting
+mc_norm <- dplyr::filter(demo_mc_norm, wllt == "t")
+demo_md <- fit_curve_tcpl(mc_norm, assay_info)
+
+```
+
+## Rank Chemicals
+A toxicity-adjusted ranking score is calculated to rank chemical potency.  
+For more information about the calculation of ranking score, please refer to this [publication](https://github.com/njekin/NIS-RAIU-assay-ToxCast-Phase1_v2-screening-analysis)  
+
+```{r}
+# calculate ranking score
+demo_rank <- rank_tcpl(demo_md)
+knitr::kable(head(demo_rank))
+```
+
+## Visualize data and fitted curve
+The `plot_tcpl` function uses `ggplot2` to plot all the fitted curve with data in original direction. The funciton returns a list of ggplot2 objects.  
+```{r, message=FALSE, warning=FALSE, fig.show='hold'}
+# make plots
+demo_plots <- plot_tcpl(demo_md, demo_rank, notation = FALSE)
+# Visualize plot
+demo_plots[[1]]
+demo_plots[[2]]
+```
+
+It is also very convenient to have the interactive version of the plot with the `plotly` package.
+```{r, message=FALSE, warning=FALSE}
+
+plotly::ggplotly(demo_plots[[2]])
+```
+
+## Export plots to pdf
+The `save_plot_pdf` function saves all plots into one pdf file.
+```{r, eval=FALSE}
+save_plot_pdf(demo_plots, "allplots.pdf")
+```
+
+
