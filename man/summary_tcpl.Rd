@@ -20,7 +20,7 @@ function to summarize curve fitting results
 }
 \examples{
 ## supply models as the essential argument. spid_chnm_table is optional.
-demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 demo_sum <- summary_tcpl(demo_md)
 

@@ -45,6 +45,18 @@ log_abs_ec <- function(p, y) {
 #' @return calculated area under the curve (AUC) value
 #'
 auc_hill_tcpl <- function(p, lower, upper) {
+  # if (is.na(lower)){
+  #   cat("lower boundary is NA")
+  # } else if (is.nan(lower)){
+  #   cat("lower boudary is NaN")
+  # }
+  #
+  # if (is.na(upper)){
+  #   cat("upper boundary is NA")
+  # } else if (is.nan(upper)){
+  #   cat("upper boudary is NaN")
+  # }
+
   #define the hill model function
   hill <- function(x) {
     p[1] / (1 + 10 ^ ((p[2] - x) * p[3]))
@@ -75,7 +87,7 @@ auc_hill_tcpl <- function(p, lower, upper) {
 #' @examples
 #' ## fit curve with default significant threshold 20
 #'
-#' demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+#' demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 #' list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 #'
 #' ## start from raw data
@@ -196,7 +208,7 @@ fit_curve_tcpl <- function(df, assay_info, prim_cutoff = 20, toxi_cutoff = 20) {
 #'
 #' @examples
 #' ## start with normalized data
-#' demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+#' demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 #' list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 #' demo_rank <- rank_tcpl(demo_md)
 #'
@@ -262,12 +274,24 @@ rank_tcpl <- function(tcpl_models, spid_chnm_table = NULL, med_taa = NULL, med_m
     med_diff <- max_toxi$median - max_prim$median
 
     ##get auc, logEC_3bmadprim, for prim
+    ##first check if significant response was present and hill model was fitted
     if (!is.na(m_prim$hill) & m_prim$hill == 1) {
       para_prim <- c(m_prim$hill_tp, m_prim$hill_ga, m_prim$hill_gw)
       #get auc
-      lr <- log_abs_ec(para_prim, cutoff_prim)
-      aa_prim <-
-        auc_hill_tcpl(para_prim, lower = lr, upper = m_prim$logc_max) - cutoff_prim * (m_prim$logc_max - lr)
+      ## check if the modeled curve pass through the cutoff line.
+      ## if not, then assign 0 to area.
+      if (hill_model(para_prim,m_prim$logc_max) >= cutoff_prim) {
+        lr <- log_abs_ec(para_prim, cutoff_prim)
+        aa_prim <-
+          auc_hill_tcpl(para_prim, lower = lr, upper = m_prim$logc_max) - cutoff_prim * (m_prim$logc_max - lr)
+      } else {
+        aa_prim <- 0
+        lr <- -3
+      }
+      # lr <- log_abs_ec(para_prim, cutoff_prim)
+      #
+      # aa_prim <-
+      #   auc_hill_tcpl(para_prim, lower = lr, upper = m_prim$logc_max) - cutoff_prim * (m_prim$logc_max - lr)
       #get AC50
       AC50_prim <- m_prim$hill_ga
       #get absEC
@@ -289,7 +313,7 @@ rank_tcpl <- function(tcpl_models, spid_chnm_table = NULL, med_taa = NULL, med_m
       AC50_prim <- NA
     }
 
-    ##get auc, logEC_3bmadprim, for toxitox
+    ##get auc, logEC_3bmadprim, for tox
     if (!is.na(m_toxi$hill) & m_toxi$hill == 1) {
       para_toxi <- c(m_toxi$hill_tp, m_toxi$hill_ga, m_toxi$hill_gw)
       #get AC50
@@ -413,7 +437,7 @@ rank_tcpl <- function(tcpl_models, spid_chnm_table = NULL, med_taa = NULL, med_m
 #'
 #' @examples
 #' ## supply models as the essential argument. spid_chnm_table is optional.
-#' demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+#' demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 #' list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 #' demo_sum <- summary_tcpl(demo_md)
 #'
@@ -567,7 +591,7 @@ summary_tcpl <- function(tcpl_models, spid_chnm_table = NULL) {
 #'
 #' @examples
 #' ## produce plots without notations
-#' demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+#' demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 #' list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 #' plots <- plot_tcpl(demo_md)
 #'
@@ -812,7 +836,7 @@ plot_tcpl <-
 #'
 #' @examples
 #' ## produce plots without notations
-#' demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+#' demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 #' list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 #' plots_minimal <- plot_tcpl_minimal(demo_md)
 #'

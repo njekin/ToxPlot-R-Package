@@ -25,7 +25,7 @@ calculate ranking score, TAA, med_diff, absolute EC values, AC50, based on the h
 }
 \examples{
 ## start with normalized data
-demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 demo_rank <- rank_tcpl(demo_md)
 

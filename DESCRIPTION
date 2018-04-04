@@ -1,7 +1,7 @@
 Package: toxplot
 Type: Package
 Title: Batch Processing, Modeling and Visualizing the Dose-Response of High-Throughput Screening Bioassay
-Version: 0.1.0
+Version: 0.1.1
 Author: Jun Wang
 Maintainer: Jun Wang <njekin@gmail.com>
 Description: A convenient interface to batch process high-throughput toxicology bioassay screening data. It's designed specifically for screening experiment that features a primary inhibition-type assay and a companion cytotoxicity assay. This package provides functions for data normalization, quality-control analysis, dose-response curve fitting (using the Hill model provided in the 'tcpl' package), visualization, and a unique toxicity-adjusted potency ranking system.  
@@ -21,5 +21,4 @@ Suggests: knitr,
     testthat,
     plotly,
     devtools,
-VignetteBuilder: knitr
 RoxygenNote: 6.0.1

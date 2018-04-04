@@ -32,7 +32,7 @@ together.
 }
 \examples{
 ## produce plots without notations
-demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 plots_minimal <- plot_tcpl_minimal(demo_md)
 

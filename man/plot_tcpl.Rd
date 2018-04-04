@@ -28,7 +28,7 @@ the uptrend direction required by the 'tcpl' function. Plots are sorted by the r
 }
 \examples{
 ## produce plots without notations
-demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 plots <- plot_tcpl(demo_md)
 

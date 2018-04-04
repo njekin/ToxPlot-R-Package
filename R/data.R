@@ -16,4 +16,4 @@
 #'
 #'
 
-"mc_norm"
+"demo_mc_norm"

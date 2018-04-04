@@ -29,7 +29,7 @@ Absolute IC20 and absolute IC50 are calculated as well.
 \examples{
 ## fit curve with default significant threshold 20
 
-demo_md <- fit_curve_tcpl(mc_norm, assay_info =
+demo_md <- fit_curve_tcpl(demo_mc_norm, assay_info =
 list(prim_assay = "Primary", toxi_assay = "Cytotox"))
 
 ## start from raw data
