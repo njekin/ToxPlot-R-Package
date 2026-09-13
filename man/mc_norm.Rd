@@ -4,11 +4,14 @@
 \name{mc_norm}
 \alias{mc_norm}
 \title{Normalized example multi-concentration screening data}
-\format{See vignette for description of the demo data.}
+\format{
+See vignette for description of the demo data.
+}
 \usage{
 mc_norm
 }
 \description{
-A dataset contains normalized example data for a primary inhibition assay and the parallel cytotoxicity assay
+A dataset containing normalized example data for a primary inhibition assay
+and the parallel cytotoxicity assay, retained for compatibility.
 }
 \keyword{datasets}

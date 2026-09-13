@@ -17,7 +17,10 @@ use NULL if either one of the assay does not need to be modeled.}
 \item{toxi_cutoff}{significance cutoff for cytotoxicity assay (eg. 3sigma or 3bMAD)}
 }
 \value{
-A list object containing modeling results, the corresponding data for each chemical.
+A list object containing modeling results and the corresponding data
+for each chemical. Each model is a one-row data.frame. Vector outputs from
+tcpl (logc, hill_modl and gnls_modl) are retained as list columns, including
+NULL predictions when a model was not fitted.
 }
 \description{
 Curve fitting using the tcplFit function in `tcpl` package.

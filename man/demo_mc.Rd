@@ -4,7 +4,9 @@
 \name{demo_mc}
 \alias{demo_mc}
 \title{Example multi-concentration screening data}
-\format{See vignette for description of the demo data.}
+\format{
+See vignette for description of the demo data.
+}
 \usage{
 demo_mc
 }

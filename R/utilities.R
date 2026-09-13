@@ -37,9 +37,9 @@ save_plot_pdf <- function(plot_list, filename) {
   assay <- spid <- apid <- rval <- NULL
 
   grDevices::pdf(filename)
+  on.exit(grDevices::dev.off(), add = TRUE)
   cat("Preparing file...\n")
   invisible(lapply(plot_list, print))
-  grDevices::dev.off()
   cat("Finished!")
 }
 
@@ -81,4 +81,15 @@ generate_index <- function(x) {
   uls <- unique(x)
   index <- rank(uls)[match(x, uls)]
   return(as.integer(index))
+}
+
+# Preserve vector and NULL components without recycling scalar fit statistics.
+tcpl_fit_row <- function(x) {
+  vector_fields <- c("logc", "hill_modl", "gnls_modl")
+  for (nm in names(x)) {
+    if (nm %in% vector_fields || length(x[[nm]]) != 1L) {
+      x[nm] <- list(I(list(x[[nm]])))
+    }
+  }
+  as.data.frame(x, optional = TRUE, stringsAsFactors = FALSE)
 }

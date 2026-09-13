@@ -4,8 +4,12 @@
 \alias{rank_tcpl}
 \title{function to calculate ranking score, TAA, med_diff, EC values based on tcpl hill model}
 \usage{
-rank_tcpl(tcpl_models, spid_chnm_table = NULL, med_taa = NULL,
-  med_med_diff = NULL)
+rank_tcpl(
+  tcpl_models,
+  spid_chnm_table = NULL,
+  med_taa = NULL,
+  med_med_diff = NULL
+)
 }
 \arguments{
 \item{tcpl_models}{the list object returned by 'fit_curve_tcpl' function}

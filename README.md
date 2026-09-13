@@ -18,6 +18,13 @@ Below you will find a brief demo usage of the package.
 Installation
 ============
 
+Version 0.1.2 is a maintenance candidate for resubmission to CRAN.
+The previous release was archived on 2018-12-10; CRAN installation will
+be available again only after the resubmission is accepted.
+The published demo output below is historical and may differ with current tcpl.
+
+
+
 You can install the package in R from github using *devtools*.
 
 ``` r
@@ -25,7 +32,7 @@ devtools::install_github('njekin/ToxPlot-R-Package')
 library(toxplot)
 ```
 
-or install from CRAN.
+After CRAN reinstatement, install from CRAN.
 
 ``` r
 install.packages("toxplot")
@@ -61,9 +68,8 @@ Demo data included in the package
 Load the demo dataset included in the package. Below is the head of the dataframe.
 
 ``` r
-library(devtools)
-library(tidyverse)
-load_all()
+library(toxplot)
+library(dplyr)
 
 knitr::kable(head(demo_mc), caption = "Head rows of demo data")
 ```

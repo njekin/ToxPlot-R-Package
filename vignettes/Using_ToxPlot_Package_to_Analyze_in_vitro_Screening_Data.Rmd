@@ -4,7 +4,7 @@ author: "Jun Wang"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Using ToxPlot Package to Analyze in vitro Screening Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -46,7 +46,7 @@ pc: positive control for celltiter-glo cytotixicity assay (DCNQ)
 Load the demo dataset included in the package. Below is the head of the dataframe.
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
-devtools::load_all()
+library(toxplot)
 
 knitr::kable(head(demo_mc), caption = "Head rows of demo data")
 ```

@@ -30,10 +30,10 @@ demo_rank <- rank_tcpl(demo_md, med_taa = NULL, med_med_diff = NULL)
 demo_plots <- plot_tcpl_minimal(demo_md, demo_rank, notation = TRUE)
 
 ## save all the plots as pdf
-# save_plot_pdf(demo_plots, ".\\output plots\\all_plots.pdf")
+# save_plot_pdf(demo_plots, ".\output plots\all_plots.pdf")
 
 ## save the 1st plot as pdf
-# save_plot_pdf(demo_plots[1], ".\\output plots\\plot1.pdf")
+# save_plot_pdf(demo_plots[1], ".\output plots\plot1.pdf")
 
 
 

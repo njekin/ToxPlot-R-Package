@@ -4,7 +4,9 @@
 \name{demo_mc_norm}
 \alias{demo_mc_norm}
 \title{Normalized example multi-concentration screening data}
-\format{See vignette for description of the demo data.}
+\format{
+See vignette for description of the demo data.
+}
 \usage{
 demo_mc_norm
 }

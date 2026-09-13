@@ -82,7 +82,10 @@ auc_hill_tcpl <- function(p, lower, upper) {
 #' @param prim_cutoff significance cutoff for primary assay (eg. 3sigma or 3bMAD)
 #' @param toxi_cutoff significance cutoff for cytotoxicity assay (eg. 3sigma or 3bMAD)
 #'
-#' @return A list object containing modeling results, the corresponding data for each chemical.
+#' @return A list object containing modeling results and the corresponding data
+#' for each chemical. Each model is a one-row data.frame. Vector outputs from
+#' tcpl (logc, hill_modl and gnls_modl) are retained as list columns, including
+#' NULL predictions when a model was not fitted.
 #'
 #' @examples
 #' ## fit curve with default significant threshold 20
@@ -120,7 +123,7 @@ fit_curve_tcpl <- function(df, assay_info, prim_cutoff = 20, toxi_cutoff = 20) {
   # get log concentration
   df <- df %>% dplyr::mutate(logc = log10(conc))
   spid_list <- unique(df$spid)
-  if (is.null(assay_info$prim) & is.null(assay_info$toxi_assay)) {
+  if (is.null(assay_info$prim_assay) & is.null(assay_info$toxi_assay)) {
     stop("assay_info cannot be NULL for both primary and cytotoxicity assay")
   }
   n <- 1
@@ -138,17 +141,17 @@ fit_curve_tcpl <- function(df, assay_info, prim_cutoff = 20, toxi_cutoff = 20) {
     } else {
 
       prim_dt <- df %>% dplyr::filter(spid == id, assay == assay_info$prim_assay)
-      m <- tcpl::tcplFit(logc = prim_dt$logc, resp = 100 - prim_dt$nval_median, bmad_prim)
+      m <- tcpl::tcplFit(logc = prim_dt$logc, resp = 100 - prim_dt$nval_median, bmad = bmad_prim)
       absIC50 <- log_abs_ec(c(m$hill_tp, m$hill_ga, m$hill_gw), 50)
       absIC20 <- log_abs_ec(c(m$hill_tp, m$hill_ga, m$hill_gw), 20)
       m[["absIC20"]] <- absIC20
       m[["absIC50"]] <- absIC50
-      m[["apid"]] <- prim_dt[[1,1]]
+      m[["apid"]] <- prim_dt$apid[1]
       m[["assay"]] <- assay_info$prim_assay
       m[["spid"]] <- id
       #prim_md <- dplyr::bind_rows(prim_md, m)
       # print(m)
-      prim_md <- data.frame(m) %>% dplyr::select(apid, assay, spid, everything())
+      prim_md <- tcpl_fit_row(m) %>% dplyr::select(apid, assay, spid, everything())
     }
 
     # model cytotox data
@@ -158,17 +161,17 @@ fit_curve_tcpl <- function(df, assay_info, prim_cutoff = 20, toxi_cutoff = 20) {
       toxi_dt <- NA
     } else {
       toxi_dt <- df %>% dplyr::filter(spid == id, assay==assay_info$toxi_assay)
-      m <- tcpl::tcplFit(logc = toxi_dt$logc, resp = 100 - toxi_dt$nval_median, bmad_toxi)
+      m <- tcpl::tcplFit(logc = toxi_dt$logc, resp = 100 - toxi_dt$nval_median, bmad = bmad_toxi)
       absIC50 <- log_abs_ec(c(m$hill_tp, m$hill_ga, m$hill_gw), 50)
       absIC20 <- log_abs_ec(c(m$hill_tp, m$hill_ga, m$hill_gw), 20)
       m[["absIC20"]] <- absIC20
       m[["absIC50"]] <- absIC50
-      m[["apid"]] <- toxi_dt[[1,1]]
+      m[["apid"]] <- toxi_dt$apid[1]
       m[["assay"]] <- assay_info$toxi_assay
       m[["spid"]] <- id
       #toxi_md <- dplyr::bind_rows(toxi_md, m)
 
-      toxi_md <- data.frame(m) %>% dplyr::select(apid, assay, spid, everything())
+      toxi_md <- tcpl_fit_row(m) %>% dplyr::select(apid, assay, spid, everything())
 
     }
 
@@ -701,13 +704,13 @@ plot_tcpl <-
       #test and plot cytotox model
       if (!is.na(m_toxi$hill) & m_toxi$hill == 1) {
         para_cyto <- c(m_toxi$hill_tp, m_toxi$hill_ga, m_toxi$hill_gw)
-        p1 <- 100 - hill_model(para_cyto, s)
+        p1 <- 100 - hill_model(para_cyto, s$logc)
         p1 <- dplyr::bind_cols(s, data.frame(p1))
         names(p1) <- c("logc", "pred")
         g <- g + geom_line(
           data = p1,
           aes(x = logc, y = pred),
-          size = 2,
+          linewidth = 2,
           alpha = 0.9,
           color = "#e02929"
         )
@@ -720,13 +723,13 @@ plot_tcpl <-
       if (!is.na(m_prim$hill) & m_prim$hill == 1) {
         para_raiu <- c(m_prim$hill_tp, m_prim$hill_ga, m_prim$hill_gw)
 
-        p2 <- 100 - hill_model(para_raiu, s)
+        p2 <- 100 - hill_model(para_raiu, s$logc)
         p2 <- bind_cols(s, data.frame(p2))
         names(p2) <- c("logc", "pred")
         g <- g + geom_line(
           data = p2,
           aes(x = logc, y = pred),
-          size = 2,
+          linewidth = 2,
           alpha = 0.9,
           color = "#377eb8"
         )
@@ -738,7 +741,7 @@ plot_tcpl <-
         geom_hline(
           yintercept = 100 - cutoff_toxi,
           alpha = 0.5,
-          size = 0.5,
+          linewidth = 0.5,
           linetype = "dashed",
           color = "#e02929"
         )
@@ -747,7 +750,7 @@ plot_tcpl <-
         geom_hline(
           yintercept = 100 - cutoff_prim,
           alpha = 0.5,
-          size = 0.5,
+          linewidth = 0.5,
           linetype = "dashed",
           color = "#377eb8"
         )
@@ -948,13 +951,13 @@ plot_tcpl_minimal <-
       #test and plot cytotox model
       if (!is.na(m_toxi$hill) & m_toxi$hill == 1) {
         para_cyto <- c(m_toxi$hill_tp, m_toxi$hill_ga, m_toxi$hill_gw)
-        p1 <- 100 - hill_model(para_cyto, s)
+        p1 <- 100 - hill_model(para_cyto, s$logc)
         p1 <- dplyr::bind_cols(s, data.frame(p1))
         names(p1) <- c("logc", "pred")
         g <- g + geom_line(
           data = p1,
           aes(x = logc, y = pred),
-          size = 2,
+          linewidth = 2,
           alpha = 0.9,
           color = "#e02929"
         )
@@ -967,13 +970,13 @@ plot_tcpl_minimal <-
       if (!is.na(m_prim$hill) & m_prim$hill == 1) {
         para_raiu <- c(m_prim$hill_tp, m_prim$hill_ga, m_prim$hill_gw)
 
-        p2 <- 100 - hill_model(para_raiu, s)
+        p2 <- 100 - hill_model(para_raiu, s$logc)
         p2 <- bind_cols(s, data.frame(p2))
         names(p2) <- c("logc", "pred")
         g <- g + geom_line(
           data = p2,
           aes(x = logc, y = pred),
-          size = 2,
+          linewidth = 2,
           alpha = 0.9,
           color = "#377eb8"
         )
@@ -985,7 +988,7 @@ plot_tcpl_minimal <-
         geom_hline(
           yintercept = 100 - cutoff_toxi,
           alpha = 0.5,
-          size = 0.5,
+          linewidth = 0.5,
           linetype = "dashed",
           color = "#e02929"
         )
@@ -994,7 +997,7 @@ plot_tcpl_minimal <-
         geom_hline(
           yintercept = 100 - cutoff_prim,
           alpha = 0.5,
-          size = 0.5,
+          linewidth = 0.5,
           linetype = "dashed",
           color = "#377eb8"
         )
@@ -1028,7 +1031,7 @@ plot_tcpl_minimal <-
         theme(axis.title.y = element_blank()) +
         theme(legend.title = element_blank(),
               legend.position = "none") +
-        theme(legend.margin=unit(0, "null")) +
+        theme(legend.margin = margin(0, 0, 0, 0)) +
         scale_color_manual(values=c("#e02929", "#377eb8"))+
         theme(plot.title=element_text(hjust=0.5, size = 16))
 
