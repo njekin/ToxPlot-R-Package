@@ -7,8 +7,13 @@ This funciton plots dose-response curve with minimal text annotation,
 no x and y axis label, 0 borders. Useful when need to present several plots
 together.}
 \usage{
-plot_tcpl_minimal(tcpl_models, rank_table = NULL, spid_chnm_table = NULL,
-  notation = FALSE, cunit = "M")
+plot_tcpl_minimal(
+  tcpl_models,
+  rank_table = NULL,
+  spid_chnm_table = NULL,
+  notation = FALSE,
+  cunit = "M"
+)
 }
 \arguments{
 \item{tcpl_models}{the list object created by 'fit_curve_tcpl' function}

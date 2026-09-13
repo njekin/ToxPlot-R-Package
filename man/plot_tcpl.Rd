@@ -4,8 +4,13 @@
 \alias{plot_tcpl}
 \title{Plot dose-resonse curves based on the tcpl hill model}
 \usage{
-plot_tcpl(tcpl_models, rank_table = NULL, spid_chnm_table = NULL,
-  notation = FALSE, cunit = "M")
+plot_tcpl(
+  tcpl_models,
+  rank_table = NULL,
+  spid_chnm_table = NULL,
+  notation = FALSE,
+  cunit = "M"
+)
 }
 \arguments{
 \item{tcpl_models}{the list object created by 'fit_curve_tcpl' function}

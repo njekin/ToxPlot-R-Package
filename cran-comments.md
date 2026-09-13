@@ -1,105 +1,40 @@
-## Test environments
-* local OS X install, R 4.0.0
-* local Windows 10 install, R 4.0.0
+## Resubmission of archived package
 
+This is toxplot 0.1.2, maintained by the original author Jun Wang
+(njekin@gmail.com).
 
-## R CMD check results
-There were no ERRORs, WARNINGs or NOTES.
+The package was archived on 2018-12-10 because examples failed while
+converting tcplFit results to a data.frame:
+"arguments imply differing number of rows: 1, 18, 0".
 
-Below is the build record:
+The conversion now retains vector and NULL outputs as list columns while
+keeping scalar model statistics in a single row. Regression tests exercise
+the full failing example, inactive and insufficient-concentration curves,
+ranking, both plotting functions, and PDF device cleanup. The unused tidyr
+import has been removed, ggplot2 line parameters updated, and the vignette
+now builds against the installed package.
 
-==> devtools::check(document = FALSE)
+## Verified local environment
 
-Setting env vars --------------------------------------------------------------
-CFLAGS  : -Wall -pedantic
-CXXFLAGS: -Wall -pedantic
-Building toxplot --------------------------------------------------------------
-'/Library/Frameworks/R.framework/Resources/bin/R' --no-site-file --no-environ  \
-  --no-save --no-restore --quiet CMD build '/Users/junwang/Dropbox/EPA  \
-  works/toxplot' --no-resave-data --no-manual 
+* macOS, Apple silicon, R 4.2.3
+* tcpl 3.3.1, ggplot2 4.0.3, ggthemes 6.0.0, dplyr 1.2.1
+* R CMD build, including the HTML vignette
+* R CMD check --as-cran --no-manual
 
-* checking for file ‘/Users/junwang/Dropbox/EPA works/toxplot/DESCRIPTION’ ... OK
-* preparing ‘toxplot’:
-* checking DESCRIPTION meta-information ... OK
-* installing the package to build vignettes
-* creating vignettes ... OK
-* checking for LF line-endings in source and make files
-* checking for empty or unneeded directories
-* looking to see if a ‘data/datalist’ file should be added
-* building ‘toxplot_0.1.0.tar.gz’
+Local check result: 0 ERRORs, 0 WARNINGs, 2 NOTEs.
 
-Setting env vars --------------------------------------------------------------
-_R_CHECK_CRAN_INCOMING_ : FALSE
-_R_CHECK_FORCE_SUGGESTS_: FALSE
-Checking toxplot --------------------------------------------------------------
-'/Library/Frameworks/R.framework/Resources/bin/R' --no-site-file --no-environ  \
-  --no-save --no-restore --quiet CMD check  \
-  '/var/folders/9x/8jptjf_d5kxgjnj9qxrkzp200000gn/T//RtmpMyJWKG/toxplot_0.1.0.tar.gz'  \
-  --as-cran --timings --no-manual 
+1. CRAN incoming feasibility identifies a new submission of an archived
+   package. This is the intended reinstatement request.
+2. The local system could not verify the current time.
 
-* using log directory ‘/Users/junwang/Dropbox/EPA works/toxplot.Rcheck’
-* using R version 3.4.0 (2017-04-21)
-* using platform: x86_64-apple-darwin15.6.0 (64-bit)
-* using session charset: UTF-8
-* using options ‘--no-manual --as-cran’
-* checking for file ‘toxplot/DESCRIPTION’ ... OK
-* checking extension type ... Package
-* this is package ‘toxplot’ version ‘0.1.0’
-* package encoding: UTF-8
-* checking package namespace information ... OK
-* checking package dependencies ... OK
-* checking if this is a source package ... OK
-* checking if there is a namespace ... OK
-* checking for executable files ... OK
-* checking for hidden files and directories ... OK
-* checking for portable file names ... OK
-* checking for sufficient/correct file permissions ... OK
-* checking whether package ‘toxplot’ can be installed ... OK
-* checking installed package size ... OK
-* checking package directory ... OK
-* checking ‘build’ directory ... OK
-* checking DESCRIPTION meta-information ... OK
-* checking top-level files ... OK
-* checking for left-over files ... OK
-* checking index information ... OK
-* checking package subdirectories ... OK
-* checking R files for non-ASCII characters ... OK
-* checking R files for syntax errors ... OK
-* checking whether the package can be loaded ... OK
-* checking whether the package can be loaded with stated dependencies ... OK
-* checking whether the package can be unloaded cleanly ... OK
-* checking whether the namespace can be loaded with stated dependencies ... OK
-* checking whether the namespace can be unloaded cleanly ... OK
-* checking dependencies in R code ... OK
-* checking S3 generic/method consistency ... OK
-* checking replacement functions ... OK
-* checking foreign function calls ... OK
-* checking R code for possible problems ... OK
-* checking Rd files ... OK
-* checking Rd metadata ... OK
-* checking Rd line widths ... OK
-* checking Rd cross-references ... OK
-* checking for missing documentation entries ... OK
-* checking for code/documentation mismatches ... OK
-* checking Rd \usage sections ... OK
-* checking Rd contents ... OK
-* checking for unstated dependencies in examples ... OK
-* checking contents of ‘data’ directory ... OK
-* checking data for non-ASCII characters ... OK
-* checking data for ASCII and uncompressed saves ... OK
-* checking installed files from ‘inst/doc’ ... OK
-* checking files in ‘vignettes’ ... OK
-* checking examples ... NONE
-* checking for unstated dependencies in vignettes ... OK
-* checking package vignettes in ‘inst/doc’ ... OK
-* checking re-building of vignette outputs ... OK
-* DONE
-Status: OK
+Examples, tests and rebuilding vignette outputs pass.
+The PDF reference manual was not checked (--no-manual).
 
+## Still required before submission
 
-
-R CMD check results
-0 errors | 0 warnings | 0 notes
-
-R CMD check succeeded
-
+This file is a preparation draft, not a claim of completed cross-platform
+validation. Run the supplied GitHub Actions workflow on current R release,
+R-devel and R-oldrel across Linux, macOS and Windows, and update this file
+with the actual results. Check the PDF reference manual on a TeX-equipped
+machine. Do not submit until any remaining significant check issues are
+resolved or explained.
