@@ -4,7 +4,14 @@ Title: Batch Processing, Modeling and Visualizing the Dose-Response of High-Thro
 Version: 0.1.2
 Authors@R: person("Jun", "Wang", email = "njekin@gmail.com",
     role = c("aut", "cre"))
-Description: A convenient interface to batch process high-throughput toxicology bioassay screening data. It's designed specifically for screening experiment that features a primary inhibition-type assay and a companion cytotoxicity assay. This package provides functions for data normalization, quality-control analysis, dose-response curve fitting (using the Hill model provided in the 'tcpl' package), visualization, and a unique toxicity-adjusted potency ranking system.  
+Description: Batch processing of high-throughput toxicology bioassay screening
+    data from a primary inhibition assay and a companion cytotoxicity assay.
+    Provides data normalization, quality-control analysis, dose-response curve
+    fitting using the Hill model in 'tcpl', visualization, and toxicity-adjusted
+    potency ranking. Curve fitting uses the ToxCast pipeline described by
+    Filer et al. (2017) <doi:10.1093/bioinformatics/btw680>. The toxicity-adjusted
+    ranking method is described by Wang et al. (2018)
+    <doi:10.1021/acs.est.7b06145>.
 URL: https://github.com/njekin/ToxPlot-R-Package
 BugReports: https://github.com/njekin/ToxPlot-R-Package/issues
 License: GPL (>= 2)

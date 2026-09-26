@@ -128,11 +128,11 @@ fit_curve_tcpl <- function(df, assay_info, prim_cutoff = 20, toxi_cutoff = 20) {
   }
   n <- 1
   prim_md <- toxi_md <- model_list <- list()
-  cat("Processing", length(unique(df$spid)), "samples(spid)....\n")
+  message("Processing ", length(unique(df$spid)), " samples (spid)...")
   # process by each spid
   for (id in unique(df$spid)) {
     #d <- df %>% dplyr::filter(spid == i)
-    cat(id, "||")
+    message("Processing sample: ", id)
     # model raiu data
     # check if toxi assay data is available, if not, skip modeling
     if (is.null(assay_info$prim_assay)) {
@@ -190,7 +190,8 @@ fit_curve_tcpl <- function(df, assay_info, prim_cutoff = 20, toxi_cutoff = 20) {
   }
 
   time <- difftime(Sys.time(), st_time) %>% round(1)
-  cat("\nCurve Fitting Completed!\nCalculation time:", paste(unclass(time), units(time)), "\n\n")
+  message("Curve fitting completed!\nCalculation time: ",
+          paste(unclass(time), units(time)))
 
 
   return(model_list)

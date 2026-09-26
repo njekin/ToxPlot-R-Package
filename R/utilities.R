@@ -6,6 +6,9 @@
 #' @param plot_list  the r list object contains all ggplot2 objects
 #' @param filename  the output file name, including the file directory
 #'
+#' @return Invisibly returns \code{NULL}. Called for the side effect of writing
+#'   a PDF file to \code{filename}, with one page per plot in \code{plot_list}.
+#'
 #' @examples
 #' ## start from raw data
 #' # define assay
@@ -38,9 +41,10 @@ save_plot_pdf <- function(plot_list, filename) {
 
   grDevices::pdf(filename)
   on.exit(grDevices::dev.off(), add = TRUE)
-  cat("Preparing file...\n")
+  message("Preparing file...")
   invisible(lapply(plot_list, print))
-  cat("Finished!")
+  message("Finished!")
+  invisible(NULL)
 }
 
 

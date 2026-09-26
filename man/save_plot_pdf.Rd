@@ -11,6 +11,10 @@ save_plot_pdf(plot_list, filename)
 
 \item{filename}{the output file name, including the file directory}
 }
+\value{
+Invisibly returns \code{NULL}. Called for the side effect of writing
+  a PDF file to \code{filename}, with one page per plot in \code{plot_list}.
+}
 \description{
 save ggplot2 plots generated in a list to a pdf file
 }

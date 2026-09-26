@@ -11,7 +11,10 @@ test_that("tcpl results preserve scalar, vector and absent predictions", {
 
 test_that("the complete archived failing example fits, ranks and renders", {
   info <- list(prim_assay = "Primary", toxi_assay = "Cytotox")
-  models <- fit_curve_tcpl(demo_mc_norm, info)
+  expect_output(
+    models <- suppressMessages(fit_curve_tcpl(demo_mc_norm, info)),
+    NA
+  )
   expect_length(models, length(unique(demo_mc_norm$spid)))
   for (m in models) {
     for (assay in c("prim", "toxi")) {
@@ -51,7 +54,14 @@ test_that("PDF export closes its device even if printing fails", {
   before <- grDevices::dev.cur()
   output <- tempfile(fileext = ".pdf")
   on.exit(unlink(output), add = TRUE)
-  save_plot_pdf(list(ggplot2::ggplot()), output)
+  expect_output(
+    result <- withVisible(suppressMessages(
+      save_plot_pdf(list(ggplot2::ggplot()), output)
+    )),
+    NA
+  )
+  expect_null(result$value)
+  expect_false(result$visible)
   expect_identical(grDevices::dev.cur(), before)
   expect_gt(file.info(output)$size, 0)
   bad <- ggplot2::ggplot(data.frame(x = 1),

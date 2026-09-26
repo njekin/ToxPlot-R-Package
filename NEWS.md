@@ -1,5 +1,9 @@
 # toxplot 0.1.2
 
+* Add method references to DESCRIPTION in the CRAN citation format.
+* Document the invisible NULL return and PDF-writing side effect of save_plot_pdf().
+* Use suppressible messages for fitting and PDF-export progress.
+
 * Fix the CRAN archive-blocking example failure when `tcplFit()` returns
   vectors and NULL predictions: model tables now contain one row per fit,
   with list columns for concentration and prediction vectors.
